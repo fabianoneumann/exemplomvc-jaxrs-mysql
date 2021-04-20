@@ -61,12 +61,11 @@ public class ProdutoDAO {
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
-
-            List<Produto> produtos = new ArrayList<>();
-
             ResultSet resultSet = stmt.executeQuery();
 
+            List<Produto> produtos = new ArrayList<>();
             Produto produto;
+
             while (resultSet.next()) {
                 produto = new Produto();
                 produto.setIdProduto(resultSet.getInt("idProduto"));
@@ -80,6 +79,10 @@ public class ProdutoDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Produto buscaProdutoPorId(int idProduto){
+        return null;
     }
 
     public void editarProduto(Produto p) {
