@@ -10,20 +10,23 @@ import java.util.List;
 
 @Path("produtos")
 public class ProdutoController {
+
     @GET
     @Produces("application/json")
     public Response listaProdutos(){
         ProdutoDAO produtoDAO = new ProdutoDAO();
         List<Produto> produtos = produtoDAO.listaProdutos();
-
         return Response.ok(new Gson().toJson(produtos)).build();
     }
 
-    @PUT
+    @POST
     @Consumes("application/json")
     @Produces("application/json")
     public Response criaProduto(Produto produto){
-        return null;
+        ProdutoDAO produtoDAO = new ProdutoDAO();
+        if (produtoDAO.cadastraProduto(produto))
+            return Response.ok(new Gson().toJson(produto)).build();
+        return Response.serverError().build();
     }
 
     @PUT

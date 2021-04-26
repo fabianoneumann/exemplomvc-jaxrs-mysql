@@ -2,6 +2,7 @@ package com.example.produtomvc.dao;
 
 import com.example.produtomvc.factory.ConnectionFactory;
 import com.example.produtomvc.model.Produto;
+import com.example.produtomvc.model.TipoProduto;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class ProdutoDAO {
 
-    Connection connection;
+    private Connection connection;
 
     public ProdutoDAO() {
         this.connection = new ConnectionFactory().getConnection();
@@ -37,20 +38,18 @@ public class ProdutoDAO {
         }
     }
 
-    public void cadastraProduto(Produto p) {
+    public boolean cadastraProduto(Produto p) {
         String sql = "INSERT INTO produtos" +
-                " (idProduto, nome, preco) " +
-                "VALUES (?,?,?)";
+                " (nome, preco) " +
+                "VALUES (?,?)";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
 
-            stmt.setInt(1, p.getIdProduto());
-            stmt.setString(2, p.getNome());
-            stmt.setDouble(3, p.getPreco());
+            stmt.setString(1, p.getNome());
+            stmt.setDouble(2, p.getPreco());
 
-            stmt.execute();
-            stmt.close();
+            return stmt.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -82,14 +81,40 @@ public class ProdutoDAO {
     }
 
     public Produto buscaProdutoPorId(int idProduto){
+        String sql = "SELECT * FROM produtos WHERE idProduto = ?";
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, idProduto);
+
+            ResultSet resultSet = stmt.executeQuery();
+
+            while (resultSet.next()){
+                Produto produto = new Produto();
+                produto.setIdProduto(resultSet.getInt("idProduto"));
+                produto.setNome(resultSet.getString("nome"));
+                produto.setPreco(resultSet.getDouble("preco"));
+
+                //resultSet.getInt("idTipoProduto")
+                TipoProdutoDAO tpDAO = new TipoProdutoDAO();
+                TipoProduto tipoProduto = tpDAO.buscaTipoProdutoPorId(resultSet.getInt("idTipoProduto"));
+                produto.setTipoProduto(tipoProduto);
+
+                return produto;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         return null;
     }
 
-    public void editarProduto(Produto p) {
-
+    public Produto editaProduto(Produto p) {
+        return null;
     }
 
-    public void deletarProduto(Produto p) {
+    public void deletaProduto(Produto p) {
 
     }
 }
