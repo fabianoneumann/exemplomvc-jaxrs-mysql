@@ -4,10 +4,7 @@ import com.example.produtomvc.factory.ConnectionFactory;
 import com.example.produtomvc.model.Produto;
 import com.example.produtomvc.model.TipoProduto;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,13 +43,19 @@ public class ProdutoDAO {
                 "VALUES (?,?,?)";
 
         try {
-            PreparedStatement stmt = connection.prepareStatement(sql);
+            PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             stmt.setString(1, p.getNome());
             stmt.setDouble(2, p.getPreco());
             stmt.setInt(3, p.getTipoProduto().getIdTipoProduto());
 
             stmt.execute();
+
+            ResultSet resultSet = stmt.getGeneratedKeys();
+
+            while (resultSet.next()) {
+                p.setIdProduto(resultSet.getInt(1));
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -122,6 +125,13 @@ public class ProdutoDAO {
     }
 
     public void deletaProduto(Produto p) {
-
+        String sql = "DELETE FROM produtos WHERE idProduto = ?";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, p.getIdProduto());
+            stmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

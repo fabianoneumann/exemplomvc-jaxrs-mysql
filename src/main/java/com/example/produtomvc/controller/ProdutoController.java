@@ -20,15 +20,6 @@ public class ProdutoController {
         return Response.ok(new Gson().toJson("Tabela produtos criada com sucesso!")).build();
     }
 
-    @GET
-    @Produces("application/json")
-    public Response listaProdutos() {
-        ProdutoDAO produtoDAO = new ProdutoDAO();
-        List<Produto> produtos = produtoDAO.listaProdutos();
-        return Response.ok(new Gson().toJson(produtos)).build();
-    }
-
-
     /**
      * Json enviado no body da requisição post no postman
      * {
@@ -45,9 +36,25 @@ public class ProdutoController {
     public Response criaProduto(Produto produto) {
         ProdutoDAO produtoDAO = new ProdutoDAO();
         produtoDAO.cadastraProduto(produto);
-        return Response.ok(new Gson().toJson("Produto cadastrado com sucesso")).build();
+        return Response.ok(new Gson().toJson(produto)).build();
     }
 
+    @GET
+    @Produces("application/json")
+    public Response listaProdutos() {
+        ProdutoDAO produtoDAO = new ProdutoDAO();
+        List<Produto> produtos = produtoDAO.listaProdutos();
+        return Response.ok(new Gson().toJson(produtos)).build();
+    }
+
+    @GET
+    @Path("{idProduto}")
+    @Produces("application/json")
+    public Response findProdutoById(@PathParam("idProduto") int idProduto) {
+        ProdutoDAO produtoDAO = new ProdutoDAO();
+        Produto produto = produtoDAO.buscaProdutoPorId(idProduto);
+        return Response.ok(new Gson().toJson(produto)).build();
+    }
 
     //TODO: FALTA AJUSTAR
     @PUT
@@ -55,22 +62,16 @@ public class ProdutoController {
     @Consumes("application/json")
     @Produces("application/json")
     public Response editaProduto(Produto produto, @PathParam("idProduto") int idProduto) {
-        ProdutoDAO produtoDAO = new ProdutoDAO();
-        if (produtoDAO.buscaProdutoPorId(idProduto) != null){
-//                return Response.ok(new Gson().toJson(produtoDAO.editarProduto(produto))).build();
-        }
-
-        return null;
+        return Response.ok(new Gson().toJson("FALTA FAZER")).build();
     }
 
-    //TODO: FALTA AJUSTAR
-    @GET
+    @DELETE
     @Path("{idProduto}")
     @Produces("application/json")
-    public Response findProdutoById(@PathParam("idProduto") int idProduto) {
-        Produto produto = new Produto();
-
-        //Falta pegar o produto do banco a partir do idProduto
-        return Response.ok(new Gson().toJson(produto)).build();
+    public Response deletaProduto(@PathParam("idProduto") int idProduto) {
+        ProdutoDAO produtoDAO = new ProdutoDAO();
+        Produto produto = produtoDAO.buscaProdutoPorId(idProduto);
+        produtoDAO.deletaProduto(produto);
+        return Response.ok(new Gson().toJson("Produto removido com sucesso!")).build();
     }
 }

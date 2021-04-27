@@ -22,6 +22,21 @@ public class TipoProdutoController {
         return Response.ok(new Gson().toJson("Tabela tiposproduto criada com sucesso!")).build();
     }
 
+    /**
+     * Json enviado no body da requisição post no postman
+     * {
+     * 	"nome": "Porção"
+     * }
+     * */
+    @POST
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response criaTipoProduto(TipoProduto tipoProduto) {
+        TipoProdutoDAO tipoProdutoDAO = new TipoProdutoDAO();
+        tipoProdutoDAO.cadastraTipoProduto(tipoProduto);
+        return Response.ok(new Gson().toJson(tipoProduto)).build();
+    }
+
     @GET
     @Produces("application/json")
     public Response listaTipoProduto() {
@@ -30,20 +45,31 @@ public class TipoProdutoController {
         return Response.ok(new Gson().toJson(tiposProduto)).build();
     }
 
-    @POST
-    @Consumes("application/json")
-    @Produces("application/json")
-    public Response criaTipoProduto(TipoProduto tipoProduto) {
-        TipoProdutoDAO tipoProdutoDAO = new TipoProdutoDAO();
-        tipoProdutoDAO.cadastraTipoProduto(tipoProduto);
-        return Response.ok(new Gson().toJson("Tipo de Produto cadastrado com sucesso!")).build();
-    }
-
-    //TODO: FALTA AJUSTAR
     @GET
     @Path("{idTipoProduto}")
     @Produces("application/json")
     public Response buscaTipoProdutoPorId(@PathParam("idTipoProduto") int idTipoProduto) {
-        return Response.ok(new Gson().toJson("Tipo de Produto com o id informado, caso exista.")).build();
+        TipoProdutoDAO tipoProdutoDAO = new TipoProdutoDAO();
+        TipoProduto tipoProduto = tipoProdutoDAO.buscaTipoProdutoPorId(idTipoProduto);
+        return Response.ok(new Gson().toJson(tipoProduto)).build();
+    }
+
+    //TODO: FALTA FAZER
+    @PUT
+    @Path("{idTipoProduto}")
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response editaTipoProduto(@PathParam("idTipoProduto") int idTipoProduto, TipoProduto tipoProduto) {
+        return Response.ok(new Gson().toJson("FALTA FAZER")).build();
+    }
+
+    @DELETE
+    @Path("{idTipoProduto}")
+    @Produces("application/json")
+    public Response deletaTipoProduto(@PathParam("idTipoProduto") int idTipoProduto) {
+        TipoProdutoDAO tipoProdutoDAO = new TipoProdutoDAO();
+        TipoProduto tipoProduto = tipoProdutoDAO.buscaTipoProdutoPorId(idTipoProduto);
+        tipoProdutoDAO.deletaTipoProduto(tipoProduto);
+        return Response.ok(new Gson().toJson("Tipo de Produto removido com sucesso!")).build();
     }
 }
