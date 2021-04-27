@@ -23,9 +23,11 @@ public class ProdutoDAO {
         String sql = "CREATE TABLE IF NOT EXISTS produtos (" +
                 "idProduto INT PRIMARY KEY AUTO_INCREMENT," +
                 "nome VARCHAR(50) NOT NULL," +
-                "preco DECIMAL(10,2)" +
+                "preco DECIMAL(10,2)," +
+                "idTipoProduto INT," +
+                "CONSTRAINT fk_idTipoProduto FOREIGN KEY (idTipoProduto)" +
+                "REFERENCES tiposproduto(idTipoProduto)" +
                 ");";
-
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
 
@@ -38,18 +40,19 @@ public class ProdutoDAO {
         }
     }
 
-    public boolean cadastraProduto(Produto p) {
+    public void cadastraProduto(Produto p) {
         String sql = "INSERT INTO produtos" +
-                " (nome, preco) " +
-                "VALUES (?,?)";
+                " (nome, preco, idTipoProduto) " +
+                "VALUES (?,?,?)";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
 
             stmt.setString(1, p.getNome());
             stmt.setDouble(2, p.getPreco());
+            stmt.setInt(3, p.getTipoProduto().getIdTipoProduto());
 
-            return stmt.execute();
+            stmt.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -70,6 +73,10 @@ public class ProdutoDAO {
                 produto.setIdProduto(resultSet.getInt("idProduto"));
                 produto.setNome(resultSet.getString("nome"));
                 produto.setPreco(resultSet.getDouble("preco"));
+
+                TipoProdutoDAO tpDAO = new TipoProdutoDAO();
+                TipoProduto tipoProduto = tpDAO.buscaTipoProdutoPorId(resultSet.getInt("idTipoProduto"));
+                produto.setTipoProduto(tipoProduto);
 
                 produtos.add(produto);
             }

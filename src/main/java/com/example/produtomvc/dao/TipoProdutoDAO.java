@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TipoProdutoDAO {
@@ -37,11 +38,41 @@ public class TipoProdutoDAO {
     }
 
     public void cadastraTipoProduto(TipoProduto tipoProduto) {
+        String sql = "INSERT INTO tiposproduto" +
+                " (nome) " +
+                "VALUES (?)";
 
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, tipoProduto.getNome());
+            stmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<TipoProduto> listaTiposProduto() {
-        return null;
+        String sql = "SELECT * FROM tiposproduto";
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet resultSet = stmt.executeQuery();
+
+            List<TipoProduto> tiposProduto = new ArrayList<>();
+            TipoProduto tipoProduto;
+
+            while (resultSet.next()) {
+                tipoProduto = new TipoProduto();
+                tipoProduto.setIdTipoProduto(resultSet.getInt("idTipoProduto"));
+                tipoProduto.setNome(resultSet.getString("nome"));
+
+                tiposProduto.add(tipoProduto);
+            }
+
+            return tiposProduto;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public TipoProduto buscaTipoProdutoPorId(int idTipoProduto) {
